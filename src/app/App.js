@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import Auth from '../components/auth/auth';
 import connection from '../helpers/data/connection';
 import Listings from '../components/listings/listings';
 import MyNavbar from '../components/myNavbar/myNavbar';
 import authRequests from '../helpers/data/authRequests';
+
 
 class App extends Component {
   state = {
@@ -14,6 +17,21 @@ class App extends Component {
 
   componentDidMount() {
     connection();
+    this.removeListener = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          authenticated: true,
+        });
+      } else {
+        this.setState({
+          authenticated: false,
+        });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.removeListener();
   }
 
   isAuthenticated = () => {
